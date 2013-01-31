@@ -7,7 +7,7 @@ public class ContactManagerMain {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		System.out.println("Test test 2");
+		System.out.println("blah blah blah");
 		
 	}
 
