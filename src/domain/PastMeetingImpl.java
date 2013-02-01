@@ -8,28 +8,33 @@ import base.PastMeeting;
 
 public class PastMeetingImpl implements PastMeeting {
 
+	private int id;
+	private Calendar date;
+	private Set<Contact> contacts;
+	private String notes;
+	
 	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.id;
 	}
 
 	@Override
 	public Calendar getDate() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.date;
 	}
 
 	@Override
 	public Set<Contact> getContacts() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.contacts;
 	}
 
 	@Override
 	public String getNotes() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.notes;
 	}
 
 }

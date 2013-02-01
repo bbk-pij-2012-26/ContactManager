@@ -8,22 +8,26 @@ import base.FutureMeeting;
 
 public class FutureMeetingImpl implements FutureMeeting {
 
+	private int id;
+	private Calendar date;
+	private Set<Contact> contacts;
+	
 	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.id;
 	}
 
 	@Override
 	public Calendar getDate() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.date;
 	}
 
 	@Override
 	public Set<Contact> getContacts() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.contacts;
 	}
 
 }
