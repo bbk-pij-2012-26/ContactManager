@@ -29,5 +29,10 @@ public class MeetingImpl implements Meeting {
 		// TODO Auto-generated method stub
 		return this.contacts;
 	}
+	
+	private MeetingImpl()
+	{
+		this.id = this.hashCode();
+	}
 
 }

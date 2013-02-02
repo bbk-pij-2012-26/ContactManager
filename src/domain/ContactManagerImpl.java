@@ -20,13 +20,14 @@ import base.PastMeeting;
 @SuppressWarnings("serial")
 public class ContactManagerImpl implements ContactManager, Serializable {
 	
-	private final static String dataFileName = "contacts.txt";
+	private String dataFileName;
 	
 	private Map<Integer, Contact> contacts;
 	private Map<Integer, Meeting> meetings;
 	
-	public ContactManagerImpl()
+	public ContactManagerImpl(String fileName)
 	{
+		this.dataFileName = fileName;
 		this.contacts = new HashMap<Integer, Contact>();
 		this.meetings = new HashMap<Integer, Meeting>();
 		
@@ -90,9 +91,9 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 
 	@Override
 	public void addNewContact(String name, String notes) {
-		ContactImpl c = new ContactImpl();
-		c.name = name;
-		c.notes = notes;		
+		ContactImpl c = new ContactImpl(name);
+		c.notes = notes;
+		
 		this.contacts.put(c.getId(), c);		
 	}
 
@@ -134,9 +135,32 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	}
 	
 	/**
+	 * Removes all contacts and meetings information
+	 * @return
+	 */
+	public void erase()
+	{
+		this.contacts.clear();
+		this.meetings.clear();
+	}
+	
+	/**
+	 * Checks whether there are any records in the current instance
+	 * @return
+	 */
+	public boolean hasData()
+	{
+		boolean hasData = false;
+		hasData = this.contacts.size() > 0;
+		hasData = this.meetings.size() > 0;
+		return hasData;
+	}
+	
+	/**
 	 *  Initialises the ContactManager by loading the data onto memory
 	 *  If the file doesn't yet exist (and a IOException is thrown)
 	 *  then we call flush() to create an empty file 
+	 *  @return
 	 */
 	private void init()
 	{
@@ -162,7 +186,5 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 		{
 			e.printStackTrace();
 		}	  
-		
 	}
-
 }
