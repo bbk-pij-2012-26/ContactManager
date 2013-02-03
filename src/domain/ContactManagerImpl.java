@@ -6,11 +6,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import base.Contact;
 import base.ContactManager;
 import base.FutureMeeting;
@@ -22,45 +22,69 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	
 	private String dataFileName;
 	
-	private Map<Integer, Contact> contacts;
-	private Map<Integer, Meeting> meetings;
+	private SortedMap<Integer, Contact> contacts;
+	private SortedMap<Integer, Meeting> meetings;
 	
 	public ContactManagerImpl(String fileName)
 	{
 		this.dataFileName = fileName;
-		this.contacts = new HashMap<Integer, Contact>();
-		this.meetings = new HashMap<Integer, Meeting>();
+		this.contacts = new TreeMap<Integer, Contact>();
+		this.meetings = new TreeMap<Integer, Meeting>();
 		
 		this.init();
 	}
 	
 	@Override
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (date.before(Calendar.getInstance()))
+		{
+			throw new IllegalArgumentException();
+		}
+		
+		for (Contact c : contacts)
+		{
+			if (!this.contacts.containsKey(c.getId()))
+			{
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		FutureMeeting fm = new FutureMeetingImpl(contacts, date);
+		this.meetings.put(fm.getId(), fm);
+		return fm.getId();
 	}
 
 	@Override
 	public PastMeeting getPastMeeting(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		PastMeeting pm = (PastMeeting)this.meetings.get(id);
+		if (Calendar.getInstance().before(pm.getDate()))
+		{
+			throw new IllegalArgumentException();
+		}
+		
+		return pm;
 	}
 
 	@Override
 	public FutureMeeting getFutureMeeting(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		FutureMeeting fm = (FutureMeeting)this.meetings.get(id);
+		if (fm.getDate().before(Calendar.getInstance()))
+		{
+			throw new IllegalArgumentException();
+		}
+		
+		return fm;
 	}
 
 	@Override
 	public Meeting getMeeting(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		return (Meeting)this.meetings.get(id);
 	}
 
 	@Override
 	public List<Meeting> getFutureMeetingList(Contact contact) {
-		// TODO Auto-generated method stub
+		//<Meeting> meetings = new 
+		
 		return null;
 	}
 
@@ -85,28 +109,78 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 
 	@Override
 	public void addMeetingNotes(int id, String text) {
-		// TODO Auto-generated method stub
+		if (!this.meetings.containsKey(id)) {
+			throw new IllegalArgumentException();
+		}
+		if (text == null || text.length() == 0) {
+			throw new NullPointerException();
+		}
+			
+		PastMeetingImpl m = (PastMeetingImpl)this.meetings.get(id);
 		
+		if (Calendar.getInstance().before(m.getDate())) {
+			throw new IllegalStateException();
+		}
+		
+		m.addNotes(text);
 	}
 
 	@Override
 	public void addNewContact(String name, String notes) {
+		if (name == null || name.isEmpty())
+		{
+			throw new IllegalArgumentException();
+		}
+		else if (notes == null || notes.isEmpty())
+		{
+			throw new IllegalArgumentException();
+		}
+		
 		ContactImpl c = new ContactImpl(name);
 		c.notes = notes;
-		
 		this.contacts.put(c.getId(), c);		
 	}
 
 	@Override
 	public Set<Contact> getContacts(int... ids) {
-		// TODO Auto-generated method stub
-		return null;
+		Set<Contact> contacts = new TreeSet<Contact>(new ContactComparator());
+		
+		if (ids.length == 0) {
+			contacts.addAll(this.contacts.values());
+		}
+		else {
+			for (int id : ids) {
+				if (this.contacts.containsKey(id)) {
+					contacts.add((ContactImpl)this.contacts.get(ids));
+				}
+				else
+				{
+					throw new IllegalArgumentException();
+				}
+			}
+		}
+		
+		return contacts;
 	}
 
 	@Override
 	public Set<Contact> getContacts(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		//TODO: find a better implementation for this
+		if (name == null || name.isEmpty())
+		{
+			throw new NullPointerException();
+		}
+		
+		Set<Contact> contacts = new TreeSet<Contact>(new ContactComparator());
+		for (Contact c : this.contacts.values())
+		{
+			if (c.getName().toUpperCase().contains(name.toUpperCase()))
+			{
+				contacts.add(c);
+			}
+		}
+		
+		return contacts;
 	}
 
 	@Override
@@ -124,15 +198,6 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 			i.printStackTrace();
 		}
 	}	
-	
-	/**
-	 * Dummy method to return all contacts for testing
-	 * @return a set of all contacts saved contacts
-	 */	
-	public Set<Contact> getAllContacts()
-	{
-		return new HashSet<Contact>(this.contacts.values());
-	}
 	
 	/**
 	 * Removes all contacts and meetings information

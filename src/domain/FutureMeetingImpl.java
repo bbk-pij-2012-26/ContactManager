@@ -14,20 +14,23 @@ public class FutureMeetingImpl implements FutureMeeting {
 	
 	@Override
 	public int getId() {
-		// TODO Auto-generated method stub
 		return this.id;
 	}
 
 	@Override
 	public Calendar getDate() {
-		// TODO Auto-generated method stub
 		return this.date;
 	}
 
 	@Override
 	public Set<Contact> getContacts() {
-		// TODO Auto-generated method stub
 		return this.contacts;
 	}
-
+	
+	public FutureMeetingImpl(Set<Contact> contacts, Calendar date)
+	{
+		this.id = this.hashCode();
+		this.contacts = contacts;
+		this.date = date;
+	}
 }

@@ -36,5 +36,14 @@ public class PastMeetingImpl implements PastMeeting {
 		// TODO Auto-generated method stub
 		return this.notes;
 	}
+	
+	/**
+	 * Adds notes to the meeting
+	 * @param notes the notes to be added
+	 */
+	public void addNotes(String notes)
+	{
+		this.notes += notes + ";";
+	}
 
 }

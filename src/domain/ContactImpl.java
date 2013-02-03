@@ -39,5 +39,4 @@ public class ContactImpl implements Contact, Serializable {
 		this.id = this.hashCode();
 		this.name = name;
 	}
-	
 }

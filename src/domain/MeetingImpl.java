@@ -14,19 +14,16 @@ public class MeetingImpl implements Meeting {
 	
 	@Override
 	public int getId() {
-		// TODO Auto-generated method stub
 		return this.id;
 	}
 
 	@Override
 	public Calendar getDate() {
-		// TODO Auto-generated method stub
 		return this.date;
 	}
 
 	@Override
 	public Set<Contact> getContacts() {
-		// TODO Auto-generated method stub
 		return this.contacts;
 	}
 	
@@ -34,5 +31,4 @@ public class MeetingImpl implements Meeting {
 	{
 		this.id = this.hashCode();
 	}
-
 }
