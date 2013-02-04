@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -83,9 +84,20 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 
 	@Override
 	public List<Meeting> getFutureMeetingList(Contact contact) {
-		//<Meeting> meetings = new 
+		if (!this.contacts.containsKey(contact.getId()))
+		{
+			throw new IllegalArgumentException();
+		}
 		
-		return null;
+		List<Meeting> meetings = new LinkedList<Meeting>();
+		
+		for (Meeting m : this.meetings.values()) {
+			if (Calendar.getInstance().before(m.getDate())) {
+				meetings.add((Meeting)m);
+			}
+		}
+		
+		return meetings;
 	}
 
 	@Override
