@@ -1,6 +1,6 @@
 package tests;
 
-import static org.junit.Assert.*;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -17,18 +17,9 @@ public class ContactImplTest {
 		c.addNotes("note 2");
 		c.addNotes("note 3");
 		
-		if (c.getId() <= 0) 
-			fail("Invalid ID!");
-		
-		if (c.getName().isEmpty())
-			fail("Name not set!");
-		
-		if (c.getNotes().isEmpty())
-			fail("Notes not set!");
-		
-		System.out.println(c.getId());
-		System.out.println(c.getName());
-		System.out.println(c.getNotes());
+		Assert.assertTrue(c.getId() > 0);
+		Assert.assertFalse(c.getName().isEmpty());
+		Assert.assertFalse(c.getNotes().isEmpty());
 	}
 
 }

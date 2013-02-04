@@ -1,13 +1,18 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Set;
 
 import base.Contact;
 import base.Meeting;
 
-public class MeetingImpl implements Meeting {
+public class MeetingImpl implements Meeting, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private Calendar date;
 	private Set<Contact> contacts;
@@ -27,8 +32,16 @@ public class MeetingImpl implements Meeting {
 		return this.contacts;
 	}
 	
-	private MeetingImpl()
+	public MeetingImpl()
 	{
 		this.id = this.hashCode();
 	}
+	
+	public MeetingImpl(Set<Contact> contacts, Calendar date)
+	{
+		this.id = this.hashCode();
+		this.contacts = contacts;
+		this.date = date;
+	}
+	
 }

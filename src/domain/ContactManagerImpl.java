@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -37,7 +39,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	
 	@Override
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-		if (date.before(Calendar.getInstance()))
+		if (date.before(Calendar.getInstance())) //if it's a past meeting
 		{
 			throw new IllegalArgumentException();
 		}
@@ -58,7 +60,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	@Override
 	public PastMeeting getPastMeeting(int id) {
 		PastMeeting pm = (PastMeeting)this.meetings.get(id);
-		if (Calendar.getInstance().before(pm.getDate()))
+		if (pm != null && Calendar.getInstance().before(pm.getDate()))
 		{
 			throw new IllegalArgumentException();
 		}
@@ -69,7 +71,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	@Override
 	public FutureMeeting getFutureMeeting(int id) {
 		FutureMeeting fm = (FutureMeeting)this.meetings.get(id);
-		if (fm.getDate().before(Calendar.getInstance()))
+		if (fm != null && fm.getDate().before(Calendar.getInstance()))
 		{
 			throw new IllegalArgumentException();
 		}
@@ -79,44 +81,95 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 
 	@Override
 	public Meeting getMeeting(int id) {
-		return (Meeting)this.meetings.get(id);
+		return this.meetings.get(id);
 	}
 
 	@Override
 	public List<Meeting> getFutureMeetingList(Contact contact) {
-		if (!this.contacts.containsKey(contact.getId()))
+		if (contact == null || !this.contacts.containsKey(contact.getId()))
 		{
 			throw new IllegalArgumentException();
 		}
 		
-		List<Meeting> meetings = new LinkedList<Meeting>();
-		
+		List<Meeting> meetings = new ArrayList<Meeting>();		
 		for (Meeting m : this.meetings.values()) {
-			if (Calendar.getInstance().before(m.getDate())) {
-				meetings.add((Meeting)m);
+			if (Calendar.getInstance().before(m.getDate())) //if is in future
+			{		
+				for (Contact c : m.getContacts()) {
+					if (c.getId() == contact.getId()) {
+						meetings.add(m);	
+						break;
+					}
+				}			
 			}
 		}
-		
+				
 		return meetings;
 	}
 
 	@Override
-	public List<Meeting> getFutureMeetingList(Calendar date) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Meeting> getFutureMeetingList(Calendar date) {	
+		HashMap<Integer, Meeting> meetings = new HashMap<Integer, Meeting>();		
+		for (Meeting m : this.meetings.values()) {
+			boolean isInFuture = Calendar.getInstance().before(m.getDate());
+			boolean isInNewList = meetings.containsKey(m.getId());		
+			
+			if (isInFuture && !isInNewList) {
+				meetings.put(m.getId(), m);
+			}
+		}
+		
+		List<Meeting> uniqueMeetings = new ArrayList<Meeting>();
+		uniqueMeetings.addAll(meetings.values());
+		
+		Collections.sort(uniqueMeetings, new MeetingComparator());
+		
+		return uniqueMeetings;
 	}
 
 	@Override
 	public List<PastMeeting> getPastMeetingList(Contact contact) {
-		// TODO Auto-generated method stub
-		return null;
+		if (contact == null || !this.contacts.containsKey(contact.getId()))
+		{
+			throw new IllegalArgumentException();
+		}
+		
+		List<PastMeeting> meetings = new ArrayList<PastMeeting>();		
+		for (Meeting m : this.meetings.values()) {
+			if (Calendar.getInstance().after(m.getDate())) //if is in past
+			{		
+				for (Contact c : m.getContacts()) {
+					if (c.getId() == contact.getId()) {
+						meetings.add((PastMeeting)m);	
+						break;
+					}
+				}			
+			}
+		}
+				
+		return meetings;
 	}
 
 	@Override
-	public void addNewPastMeeting(Set<Contact> contacts, Calendar date,
-			String text) {
-		// TODO Auto-generated method stub
+	public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
+		if (contacts == null || date == null || text == null) {
+			throw new NullPointerException();
+		}
 		
+		if (contacts.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		
+		for (Contact c : contacts)
+		{
+			if (!this.contacts.containsKey(c.getId()))
+			{
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		PastMeeting pm = new PastMeetingImpl(contacts, date, text);	
+		this.meetings.put(pm.getId(), pm);		
 	}
 
 	@Override
@@ -124,7 +177,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 		if (!this.meetings.containsKey(id)) {
 			throw new IllegalArgumentException();
 		}
-		if (text == null || text.length() == 0) {
+		if (text == null || text.isEmpty()) {
 			throw new NullPointerException();
 		}
 			
@@ -139,12 +192,8 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 
 	@Override
 	public void addNewContact(String name, String notes) {
-		if (name == null || name.isEmpty())
-		{
-			throw new IllegalArgumentException();
-		}
-		else if (notes == null || notes.isEmpty())
-		{
+		if (name == null || name.isEmpty() || 
+			notes == null || notes.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -165,8 +214,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 				if (this.contacts.containsKey(id)) {
 					contacts.add((ContactImpl)this.contacts.get(ids));
 				}
-				else
-				{
+				else {
 					throw new IllegalArgumentException();
 				}
 			}

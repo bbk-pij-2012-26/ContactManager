@@ -1,13 +1,18 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Set;
 
 import base.Contact;
 import base.PastMeeting;
 
-public class PastMeetingImpl implements PastMeeting {
+public class PastMeetingImpl implements PastMeeting, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private Calendar date;
 	private Set<Contact> contacts;
@@ -37,6 +42,13 @@ public class PastMeetingImpl implements PastMeeting {
 		return this.notes;
 	}
 	
+	public PastMeetingImpl(Set<Contact> contacts, Calendar date, String notes) {
+		this.id = this.hashCode();
+		this.date = date;
+		this.contacts = contacts;
+		this.notes = notes;
+	}
+	
 	/**
 	 * Adds notes to the meeting
 	 * @param notes the notes to be added
@@ -45,5 +57,4 @@ public class PastMeetingImpl implements PastMeeting {
 	{
 		this.notes += notes + ";";
 	}
-
 }

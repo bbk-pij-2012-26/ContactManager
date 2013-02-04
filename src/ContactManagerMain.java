@@ -16,11 +16,11 @@ public class ContactManagerMain {
 //	    cm.addNewContact("Contact 3", "blah blah");
 //	    cm.flush();
 	    
-	    ContactManagerImpl cm2 = new ContactManagerImpl(DATAFILENAME);
-	    for (Contact c : cm2.getContacts())
-	    {
-	    	System.out.println(c.getId() + ":" + c.getName());
-	    }
+//	    ContactManagerImpl cm2 = new ContactManagerImpl(DATAFILENAME);
+//	    for (Contact c : cm2.getContacts())
+//	    {
+//	    	System.out.println(c.getId() + ":" + c.getName());
+//	    }
 	}
 
 }

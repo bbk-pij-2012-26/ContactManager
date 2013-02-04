@@ -1,13 +1,18 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Set;
 
 import base.Contact;
 import base.FutureMeeting;
 
-public class FutureMeetingImpl implements FutureMeeting {
+public class FutureMeetingImpl implements FutureMeeting, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private Calendar date;
 	private Set<Contact> contacts;
