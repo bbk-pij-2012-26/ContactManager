@@ -1,17 +1,14 @@
 package tests;
 
 import junit.framework.Assert;
-
 import org.junit.Test;
-
 import domain.ContactImpl;
-
 import base.Contact;
 
 public class ContactImplTest {
 
 	@Test
-	public void test() {
+	public void MainTest() {
 		Contact c = new ContactImpl("Contact 1");
 		c.addNotes("note 1");
 		c.addNotes("note 2");
