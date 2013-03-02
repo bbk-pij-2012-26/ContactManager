@@ -18,8 +18,8 @@ public class ContactImplTest {
 		c.addNotes("note 3");
 		
 		Assert.assertTrue(c.getId() > 0);
-		Assert.assertFalse(c.getName().isEmpty());
-		Assert.assertFalse(c.getNotes().isEmpty());
+		Assert.assertTrue(c.getName().equals("Contact 1"));
+		Assert.assertTrue(c.getNotes().equals("note 1;note 2;note 3;"));
 	}
 
 }
