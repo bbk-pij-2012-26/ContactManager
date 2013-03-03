@@ -7,34 +7,14 @@ import java.util.Set;
 import base.Contact;
 import base.PastMeeting;
 
-public class PastMeetingImpl implements PastMeeting, Serializable {
+public class PastMeetingImpl extends MeetingImpl implements PastMeeting, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int id;
-	private Calendar date;
-	private Set<Contact> contacts;
+
 	private String notes;
-	
-	@Override
-	public int getId() {
-		// TODO Auto-generated method stub
-		return this.id;
-	}
-
-	@Override
-	public Calendar getDate() {
-		// TODO Auto-generated method stub
-		return this.date;
-	}
-
-	@Override
-	public Set<Contact> getContacts() {
-		// TODO Auto-generated method stub
-		return this.contacts;
-	}
 
 	@Override
 	public String getNotes() {
@@ -42,10 +22,9 @@ public class PastMeetingImpl implements PastMeeting, Serializable {
 		return this.notes;
 	}
 	
-	public PastMeetingImpl(Set<Contact> contacts, Calendar date, String notes) {
-		this.id = this.hashCode();
-		this.date = date;
-		this.contacts = contacts;
+	public PastMeetingImpl(Set<Contact> contacts, Calendar date, String notes) 
+	{
+		super(contacts, date);		
 		this.notes = notes;
 	}
 	

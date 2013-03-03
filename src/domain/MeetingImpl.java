@@ -13,9 +13,9 @@ public class MeetingImpl implements Meeting, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int id;
-	private Calendar date;
-	private Set<Contact> contacts;
+	protected int id;
+	protected Calendar date;
+	protected Set<Contact> contacts;
 	
 	@Override
 	public int getId() {
