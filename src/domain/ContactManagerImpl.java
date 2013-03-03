@@ -39,7 +39,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	
 	@Override
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
-		if (date.before(Calendar.getInstance())) //if it's a past meeting
+		if (date.before(Calendar.getInstance())) //ensure it's a past meeting
 		{
 			throw new IllegalArgumentException();
 		}
@@ -212,7 +212,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 		else {
 			for (int id : ids) {
 				if (this.contacts.containsKey(id)) {
-					contacts.add((ContactImpl)this.contacts.get(ids));
+					contacts.add(this.contacts.get(id));
 				}
 				else {
 					throw new IllegalArgumentException();
@@ -260,7 +260,7 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 	}	
 	
 	/**
-	 * Removes all contacts and meetings information
+	 * Deletes all contacts and meetings information
 	 * @return
 	 */
 	public void erase()

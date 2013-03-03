@@ -1,216 +1,152 @@
-//package tests;
-//
-//import static org.junit.Assert.*;
-//
-//import java.util.ArrayList;
-//import java.util.Calendar;
-//import java.util.HashSet;
-//import java.util.List;
-//import java.util.Random;
-//import java.util.Set;
-//import org.junit.Test;
-//import base.Contact;
-//import base.ContactManager;
-//import base.Meeting;
-//import base.PastMeeting;
-//import domain.ContactManagerImpl;
-//import domain.FutureMeetingImpl;
-//import domain.PastMeetingImpl;
-//
-//public class ContactManagerImplTest {
-//
-//	private final String DATAFILENAME = "contacts_test.txt";
-//		
-//	@Test
-//	/**
-//	 * Tests:
-//	 * addNewContact(name, notes)
-//	 */
-//	public void addContactsTest()
-//	{				
-//		ContactManager cm = new ContactManagerImpl(DATAFILENAME);
-//		int noOfContacts = getRandomInt(20, 100);		
-//		
-//		//add some contacts
-//		for (int i = 0; i < noOfContacts; i++)
-//		{
-//			cm.addNewContact("My test contact "+ i, "blah blah blah");
-//		}		
-//
-//		cm.flush();
-//	}
-//	
-//	@Test
-//	/**
-//	 * Tests:
-//	 * addFutureMeeting(contacts, date)
-//	 */
-//	public void addFutureMeetingsTest()
-//	{
-//		ContactManager cm = new ContactManagerImpl(DATAFILENAME);
-//		
-//		List<Meeting> meetings = getRandomMeetings(true);
-//		for (Meeting m : meetings)
-//		{
-//			cm.addFutureMeeting(m.getContacts(), m.getDate());
-//		}		
-//		
-//		cm.flush();
-//	}
-//	
-//	@Test
-//	/**
-//	 * Tests:
-//	 * addNewPastMeeting(contacts, date, notes)
-//	 */
-//	public void addPastMeetingsTest()
-//	{
-//		ContactManager cm = new ContactManagerImpl(DATAFILENAME);
-//		
-//		List<Meeting> meetings = getRandomMeetings(false);
-//		for (Meeting m : meetings)
-//		{
-//			PastMeeting pm = (PastMeeting)m;
-//			cm.addNewPastMeeting(pm.getContacts(), pm.getDate(), pm.getNotes());
-//		}		
-//		
-//		cm.flush();
-//	}
-//	
-//	@Test
-//	/**
-//	 * Tests:
-//	 * getContacts()
-//	 * getFutureMeetingList(contact)
-//	 * getPastMeetingList(contact)
-//	 * getPastMeeting(id)
-//	 */
-//	public void dataLoadTest() 
-//	{
-//		ContactManagerImpl cmCleaner = new ContactManagerImpl(DATAFILENAME);
-//		cmCleaner.erase();
-//		cmCleaner.flush();
-//
-//		//Return data from the saved file
-//		ContactManagerImpl cm = new ContactManagerImpl(DATAFILENAME);
-//		Set<Contact> loadedContacts = cm.getContacts();	
-//		
-//		if (loadedContacts.size() == 0)
-//			fail("getContacts() not working");
-//		
-//		int futureMeetingsCount = 0; //counts all FUTURE meetings retrieved for all contacts scanned
-//		int pastMeetingsCount = 0; //counts all PAST meetings retrieved for all contacts scanned
-//		
-//		for (Contact c : loadedContacts)
-//		{
-//			//test getFutureMeetingList(contact)
-//			List<Meeting> futureMeetings = cm.getFutureMeetingList(c);
-//			futureMeetingsCount += futureMeetings.size();
-//			
-//			//test getFutureMeeting(id)
-//			for (Meeting fm : futureMeetings) {
-//				Meeting returnedMeeting = cm.getFutureMeeting(fm.getId());
-//				if (fm.getId() != returnedMeeting.getId())
-//					fail("getFutureMeeting(id) - didn't return the same meeting");
-//			}
-//			
-//			//test getPastMeetingList(contact)
-//			List<PastMeeting> pastMeetings = cm.getPastMeetingList(c);
-//			pastMeetingsCount += pastMeetings.size();		
-//			
-//			//test getPastMeeting(id)
-//			for (PastMeeting pm : pastMeetings) {
-//				PastMeeting returnedMeeting = cm.getPastMeeting(pm.getId());
-//				if (pm.getId() != returnedMeeting.getId())
-//					fail("getPastMeeting(id) - didn't return the same meeting");
-//			}
-//			
-//			System.out.printf("%d : %s [FutureMeetings: %d|PastMeetings: %d"
-//					, c.getId(), c.getName(), futureMeetings.size(), pastMeetings.size());
-//			System.out.println();
-//		}
-//		
-//		if (futureMeetingsCount == 0)
-//			fail("no FutureMeetings returned");
-//		
-//		if (pastMeetingsCount == 0)
-//			fail("no PastMeetings returned");
-//		
-//		System.out.printf("-- Found %d contacts", loadedContacts.size());
-//		System.out.println();
-//	}
-//	
-//	@Test
-//	/**
-//	 * Tests:
-//	 * getContacts(name)
-//	 */
-//	public void getContactsByNameTest()
-//	{
-//		String nameQuery = "2";
-//		
-//		// Search for a contact by name
-//		ContactManagerImpl cm = new ContactManagerImpl(DATAFILENAME);
-//		Set<Contact> loadedContacts = cm.getContacts(nameQuery);
-//		
-//		if (loadedContacts.size() == 0)
-//			fail("getContacts(String name) not working");
-//		
-//		System.out.printf("-- Found %d contacts matching query '%s'"
-//				, loadedContacts.size(), nameQuery);
-//		System.out.println();
-//	}
-//	
-//	
-//	private int getRandomInt(int min, int max) {
-//		Random rnd = new Random();
-//		int randomInt = min;
-//		while (randomInt <= min) {
-//			randomInt = rnd.nextInt(max+1);
-//		}
-//		return randomInt;
-//	}
-//	
-//	private List<Meeting> getRandomMeetings(boolean future)
-//	{
-//		int noOfMeetings = getRandomInt(20, 100);
-//		
-//		ContactManager cm = new ContactManagerImpl(DATAFILENAME);
-//		List<Contact> contactList = new ArrayList<Contact>();
-//		contactList.addAll(cm.getContacts());
-//		
-//		List<Meeting> meetings = new ArrayList<Meeting>();
-//		
-//		//get some future meetings
-//		for (int i = 0; i < noOfMeetings; i++) {
-//			//get a random date
-//			int daysToAdd = getRandomInt(1, 100);
-//			if (!future) daysToAdd *= -1; //get some days in the past if needed
-//			
-//			Calendar rndDate = Calendar.getInstance();
-//			rndDate.add(Calendar.DATE, daysToAdd); 
-//			
-//			//get a random number of contacts (between 0 and 5)
-//			//from a random position in the contact list created above	
-//			//and add it to the list of contacts for this meeting
-//			int contactListStartIndex = getRandomInt(0, contactList.size()-10);
-//			int contactListEndIndex = contactListStartIndex + getRandomInt(1, 10);
-//			
-//			Set<Contact> meetingContacts = new HashSet<Contact>();
-//			for (int j = contactListStartIndex; j < contactListEndIndex; j++) {			
-//				meetingContacts.add(contactList.get(j));				
-//			}
-//			
-//			if (future) { 
-//				meetings.add(new FutureMeetingImpl(meetingContacts, rndDate));
-//			}
-//			else {
-//				meetings.add(new PastMeetingImpl(meetingContacts, rndDate, "test notes"));
-//			}
-//		
-//		}	
-//		
-//		return meetings;
-//	}
-//
-//}
+package tests;
+
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.Test;
+import junit.framework.Assert;
+import base.Contact;
+import base.PastMeeting;
+import domain.ContactManagerImpl;
+
+public class ContactManagerImplTest {
+
+	private final String DATAFILENAME = "contacts_test.txt";
+	private ContactManagerImpl mContactManager;
+	
+	@Test
+	/**
+	 * Tests:
+	 * getContacts()
+	 * getFutureMeetingList(contact)
+	 * getPastMeetingList(contact)
+	 * getPastMeeting(id)
+	 */
+	public void MainTest() 
+	{
+		this.mContactManager = new ContactManagerImpl(DATAFILENAME);	
+		this.mContactManager.erase(); //clear existing file
+		
+		this.contactsTest();
+		this.futureMeetingsTest();
+		this.pastMeetingsTest();		
+		this.addMeetingNotesTest();				
+		
+		this.mContactManager.flush();
+	}
+	
+	/**
+	 * Test methods: 
+	 * getContacts()
+	 * getContacts(int...)
+	 * getContacts(string)
+	 */
+	private void contactsTest()
+	{		
+		//test addNewContact()
+		this.mContactManager.addNewContact("Contact 1", "notes for contact 1");
+		this.mContactManager.addNewContact("Contact 2", "notes for contact 2");
+		this.mContactManager.addNewContact("Contact 3", "notes for contact 3");
+		this.mContactManager.addNewContact("Contact 4", "notes for contact 4");
+		this.mContactManager.addNewContact("Contact 5", "notes for contact 5");
+		
+		//test getContacts()
+		Assert.assertTrue(this.mContactManager.getContacts().size() == 5);
+		
+		//test getContacts(int...)
+		Object[] contacts = this.mContactManager.getContacts().toArray();
+		int contactId1 = ((Contact)contacts[0]).getId();
+		int contactId2 = ((Contact)contacts[1]).getId();
+		
+		//return the first couple of contacts
+		Object[] contactsById = this.mContactManager.getContacts(contactId1, contactId2).toArray();		
+		Assert.assertTrue("Wrong number of contacts returned!", contactsById.length == 2); //ensure only 2 contacts are returned
+		
+		//ensure the contacts returned have the same ids which were requested
+		for (int i = 0; i < 2; i++)
+		{		
+			int contactId = ((Contact)contactsById[0]).getId();
+			Assert.assertTrue("Wrong id of contacts returned!", contactId == contactId1 || contactId == contactId2);
+		}		
+		
+		//test getContacts(string)
+		Set<Contact> contactsByName = this.mContactManager.getContacts("Contact 1");
+		Assert.assertTrue("Should return 1 contact", contactsByName.size() == 1);
+	}	
+	
+	/**
+	 * Test methods:
+	 * addFutureMeeting()
+	 * getFutureMeetingList(calendar)
+	 * getFutureMeetingList(contact)
+	 */
+	private void futureMeetingsTest()
+	{	
+		Set<Contact> meetingContacts = new HashSet<Contact>();
+		meetingContacts.addAll(this.mContactManager.getContacts("Contact 1")); //should only add "Contact 1"  
+		meetingContacts.addAll(this.mContactManager.getContacts("Contact 2")); //should only add "Contact 2"
+		
+		Assert.assertTrue("The Set should only contain 2 contacts", meetingContacts.size() == 2);
+		
+		//get a future date in 2 months time
+		Calendar date = Calendar.getInstance();
+		date.add(Calendar.MONTH, 2);
+		
+		this.mContactManager.addFutureMeeting(meetingContacts, date);
+		
+		Assert.assertTrue("It should return at least one contact!", 
+				this.mContactManager.getFutureMeetingList(date).size() == 1);
+		
+		Contact c = (Contact) meetingContacts.toArray()[0]; //get first contact of the meeting
+		
+		Assert.assertTrue("It should return at least one contact!", 
+				this.mContactManager.getFutureMeetingList(c).size() == 1);
+		
+	}	
+	
+	/**
+	 * Test methods:
+	 * addNewPastMeeting()	 * 
+	 * getPastMeetingList(contact)
+	 */
+	private void pastMeetingsTest()
+	{	
+		Set<Contact> meetingContacts = new HashSet<Contact>();
+		meetingContacts.addAll(this.mContactManager.getContacts("Contact 3")); //should only add "Contact 3"  
+		meetingContacts.addAll(this.mContactManager.getContacts("Contact 4")); //should only add "Contact 4"
+		
+		Assert.assertTrue("The Set should only contain 2 contacts", meetingContacts.size() == 2);
+		
+		//get a past date 2 months ago
+		Calendar date = Calendar.getInstance();
+		date.add(Calendar.MONTH, -2);
+		
+		this.mContactManager.addNewPastMeeting(meetingContacts, date, "these are notes from the meeting");
+			
+		Contact c = (Contact) meetingContacts.toArray()[0]; //get first contact of the meeting
+		
+		Assert.assertTrue("It should return at least one contact!", 
+				this.mContactManager.getPastMeetingList(c).size() == 1);
+		
+	}
+	
+	/**
+	 * Test methods:
+	 * addMeetingNotes(int)
+	 */
+	private void addMeetingNotesTest()
+	{
+		Contact c = (Contact) this.mContactManager.getContacts("Contact 3").toArray()[0];
+		
+		PastMeeting pm = (PastMeeting) this.mContactManager.getPastMeetingList(c).toArray()[0];
+		Assert.assertTrue("Couldn't find a past meeting with Contact 3", pm != null);
+		
+		int pastMeetingId = pm.getId();
+		
+		this.mContactManager.addMeetingNotes(pastMeetingId, "these are some other notes from the meeting!");
+				
+		
+		PastMeeting pm2 = this.mContactManager.getPastMeeting(pastMeetingId);
+		Assert.assertTrue(pm2.getNotes().contains("these are some other notes"));
+	}
+}
