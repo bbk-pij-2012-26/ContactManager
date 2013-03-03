@@ -103,6 +103,8 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 				}			
 			}
 		}
+		
+		Collections.sort(meetings, new MeetingComparator());
 				
 		return meetings;
 	}
@@ -146,6 +148,8 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 				}			
 			}
 		}
+		
+		Collections.sort(meetings, new MeetingComparator());
 				
 		return meetings;
 	}

@@ -6,13 +6,15 @@ import java.util.Set;
 import org.junit.Test;
 import junit.framework.Assert;
 import base.Contact;
+import base.ContactManager;
+import base.Meeting;
 import base.PastMeeting;
 import domain.ContactManagerImpl;
 
 public class ContactManagerImplTest {
 
 	private final String DATAFILENAME = "contacts_test.txt";
-	private ContactManagerImpl mContactManager;
+	private ContactManager mContactManager;
 	
 	@Test
 	/**
@@ -25,7 +27,7 @@ public class ContactManagerImplTest {
 	public void MainTest() 
 	{
 		this.mContactManager = new ContactManagerImpl(DATAFILENAME);	
-		this.mContactManager.erase(); //clear existing file
+		((ContactManagerImpl)this.mContactManager).erase(); //clear existing file
 		
 		this.contactsTest();
 		this.futureMeetingsTest();
@@ -33,6 +35,9 @@ public class ContactManagerImplTest {
 		this.addMeetingNotesTest();				
 		
 		this.mContactManager.flush();
+		
+		
+		//ContactManager cm = new ContactM
 	}
 	
 	/**
@@ -88,19 +93,30 @@ public class ContactManagerImplTest {
 		
 		Assert.assertTrue("The Set should only contain 2 contacts", meetingContacts.size() == 2);
 		
+		//Create 2 meetings and add them in REVERSE chronological order
+		
 		//get a future date in 2 months time
 		Calendar date = Calendar.getInstance();
 		date.add(Calendar.MONTH, 2);
-		
 		this.mContactManager.addFutureMeeting(meetingContacts, date);
 		
-		Assert.assertTrue("It should return at least one contact!", 
-				this.mContactManager.getFutureMeetingList(date).size() == 1);
+		date = Calendar.getInstance();
+		date.add(Calendar.MONTH, 1);
+		this.mContactManager.addFutureMeeting(meetingContacts, date);
+		
+		//test if they are returned in chronological order
+		Contact commonContact = (Contact)meetingContacts.toArray()[0];
+		Meeting fm1 = this.mContactManager.getFutureMeetingList(commonContact).get(0);
+		Meeting fm2 = this.mContactManager.getFutureMeetingList(commonContact).get(1);
+		Assert.assertTrue("Meetings are not in chronological order", fm1.getDate().before(fm2.getDate()));
+		
+		Assert.assertTrue("It should return at least two meetings!", 
+				this.mContactManager.getFutureMeetingList(date).size() == 2);
 		
 		Contact c = (Contact) meetingContacts.toArray()[0]; //get first contact of the meeting
 		
-		Assert.assertTrue("It should return at least one contact!", 
-				this.mContactManager.getFutureMeetingList(c).size() == 1);
+		Assert.assertTrue("It should return at least two meetings!", 
+				this.mContactManager.getFutureMeetingList(c).size() == 2);
 		
 	}	
 	
@@ -117,16 +133,28 @@ public class ContactManagerImplTest {
 		
 		Assert.assertTrue("The Set should only contain 2 contacts", meetingContacts.size() == 2);
 		
+		//Create 2 meetings and add them in REVERSE chronological order
+		
 		//get a past date 2 months ago
 		Calendar date = Calendar.getInstance();
-		date.add(Calendar.MONTH, -2);
+		date.add(Calendar.MONTH, -2);		
+		this.mContactManager.addNewPastMeeting(meetingContacts, date, "these are notes from the meeting");
 		
+		date = Calendar.getInstance();
+		date.add(Calendar.MONTH, -3);		
 		this.mContactManager.addNewPastMeeting(meetingContacts, date, "these are notes from the meeting");
 			
-		Contact c = (Contact) meetingContacts.toArray()[0]; //get first contact of the meeting
+		Contact c = (Contact) meetingContacts.toArray()[0]; //get first contact of the meetings
+				
+		//test if they are returned in chronological order
+		Contact commonContact = (Contact)meetingContacts.toArray()[0];
+		Meeting pm1 = this.mContactManager.getPastMeetingList(commonContact).get(0);
+		Meeting pm2 = this.mContactManager.getPastMeetingList(commonContact).get(1);
+		Assert.assertTrue("Meetings are not in chronological order", pm1.getDate().before(pm2.getDate()));
 		
-		Assert.assertTrue("It should return at least one contact!", 
-				this.mContactManager.getPastMeetingList(c).size() == 1);
+		
+		Assert.assertTrue("It should return at least two meetings!", 
+				this.mContactManager.getPastMeetingList(c).size() == 2);
 		
 	}
 	
